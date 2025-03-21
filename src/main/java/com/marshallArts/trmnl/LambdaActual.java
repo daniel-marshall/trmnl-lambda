@@ -27,13 +27,11 @@ import static java.util.function.Predicate.not;
 @AllArgsConstructor
 public final class LambdaActual implements RequestHandler<APIGatewayV2HTTPEvent, String> {
     private final ObjectMapper objectMapper;
-    private final HandlerDelegate<GetEvent> getDelegate;
+    private final HandlerDelegate getDelegate;
 
-    public interface HandlerDelegate<IN> {
-        String handle(final IN event, final APIGatewayV2HTTPEvent rawEvent, final Context context) throws Exception;
+    public interface HandlerDelegate {
+        String handle(final APIGatewayV2HTTPEvent rawEvent, final Context context) throws Exception;
     }
-
-    public record GetEvent() { }
 
     @Override
     @SneakyThrows
@@ -41,7 +39,6 @@ public final class LambdaActual implements RequestHandler<APIGatewayV2HTTPEvent,
         context.getLogger().log(String.valueOf(event));
         return switch (event.getRequestContext().getHttp().getMethod()) {
             case "GET" -> getDelegate.handle(
-                    objectMapper.readValue(event.getBody(), GetEvent.class),
                     event,
                     context
             );
@@ -50,7 +47,7 @@ public final class LambdaActual implements RequestHandler<APIGatewayV2HTTPEvent,
     }
 
     @AllArgsConstructor
-    public static final class GetActivityHandler implements HandlerDelegate<GetEvent> {
+    public static final class GetActivityHandler implements HandlerDelegate {
         record Target(String goal, String actual, Double completion) {
             private static Target from(com.marshallArts.trmnl.LambdaActual.Target from) {
                 final String goal = from == null ? "0" : from.goal();
@@ -86,7 +83,6 @@ public final class LambdaActual implements RequestHandler<APIGatewayV2HTTPEvent,
 
         @Override
         public String handle(
-                final GetEvent event,
                 final APIGatewayV2HTTPEvent rawEvent,
                 final Context context)
                 throws Exception {
@@ -138,7 +134,7 @@ public final class LambdaActual implements RequestHandler<APIGatewayV2HTTPEvent,
     }
 
     @AllArgsConstructor
-    public static final class GetListsHandler implements HandlerDelegate<GetEvent> {
+    public static final class GetListsHandler implements HandlerDelegate {
 
         record LeftRight(String left, String right) { }
         record Response(CalendarEvent school, DurationPretty year, LeftRight notes) { }
@@ -149,7 +145,6 @@ public final class LambdaActual implements RequestHandler<APIGatewayV2HTTPEvent,
 
         @Override
         public String handle(
-                final GetEvent event,
                 final APIGatewayV2HTTPEvent rawEvent,
                 final Context context)
                 throws Exception {
