@@ -14,10 +14,6 @@ public class ActivityLambdaMain {
         AWSLambda.main(new String[] { DaggerHandler.class.getName() + "::handleRequest" });
     }
 
-    public interface HandlerDelegate<IN> {
-        String handle(final IN event, final APIGatewayV2HTTPEvent rawEvent, final Context context) throws Exception;
-    }
-
     @Component(modules = DaggerModule.class)
     interface Lambda {
         @Named("ActivityHandler") RequestHandler<APIGatewayV2HTTPEvent, String> handler();

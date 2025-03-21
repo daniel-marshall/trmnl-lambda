@@ -16,7 +16,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.util.StdConverter;
 import com.google.common.collect.ImmutableList;
-import com.marshallArts.keeey.LambdaMain.HandlerDelegate;
 import com.marshallArts.trmnl.integ.CalendarEventReader;
 import com.marshallArts.trmnl.integ.KeeeyClient;
 import lombok.AllArgsConstructor;
@@ -29,6 +28,10 @@ import static java.util.function.Predicate.not;
 public final class LambdaActual implements RequestHandler<APIGatewayV2HTTPEvent, String> {
     private final ObjectMapper objectMapper;
     private final HandlerDelegate<GetEvent> getDelegate;
+
+    public interface HandlerDelegate<IN> {
+        String handle(final IN event, final APIGatewayV2HTTPEvent rawEvent, final Context context) throws Exception;
+    }
 
     public record GetEvent() { }
 

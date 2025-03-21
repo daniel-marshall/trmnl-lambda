@@ -36,6 +36,7 @@ dependencies {
 
     implementation("com.amazonaws", "aws-lambda-java-runtime-interface-client", "2.3.2")
     implementation("com.amazonaws", "aws-lambda-java-events", "3.15.0")
+    implementation("software.amazon.awssdk", "lambda", "2.30.36")
 
     implementation("com.fasterxml.jackson.core", "jackson-databind", "2.18.2")
     implementation("com.fasterxml.jackson.datatype", "jackson-datatype-jsr310", "2.18.2")
