@@ -18,6 +18,7 @@ import com.fasterxml.jackson.databind.util.StdConverter;
 import com.google.common.collect.ImmutableList;
 import com.marshallArts.trmnl.integ.CalendarEventReader;
 import com.marshallArts.trmnl.integ.KeeeyClient;
+import com.marshallArts.trmnl.integ.WebhookClient;
 import lombok.AllArgsConstructor;
 import lombok.SneakyThrows;
 
@@ -26,7 +27,7 @@ import static java.util.function.Predicate.not;
 
 @AllArgsConstructor
 public final class LambdaActual implements RequestHandler<APIGatewayV2HTTPEvent, String> {
-    private final ObjectMapper objectMapper;
+    private final String webhookUrl;
     private final HandlerDelegate getDelegate;
 
     public interface HandlerDelegate {
@@ -38,12 +39,20 @@ public final class LambdaActual implements RequestHandler<APIGatewayV2HTTPEvent,
     public String handleRequest(final APIGatewayV2HTTPEvent event, final Context context) {
         context.getLogger().log(String.valueOf(event));
         return switch (event.getRequestContext().getHttp().getMethod()) {
-            case "GET" -> getDelegate.handle(
-                    event,
-                    context
+            case "GET" -> invokeWebhookUrl(
+                    getDelegate.handle(
+                        event,
+                        context
+                )
             );
             default -> throw new IllegalArgumentException("Unrecognised Event");
         };
+    }
+
+    @SneakyThrows
+    public String invokeWebhookUrl(final String response) {
+        WebhookClient.invoke(webhookUrl, response);
+        return response;
     }
 
     @AllArgsConstructor
