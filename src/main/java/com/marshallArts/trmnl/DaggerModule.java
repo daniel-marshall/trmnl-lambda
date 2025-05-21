@@ -20,11 +20,11 @@ public class DaggerModule {
     @Provides
     @Named("ActivityHandler")
     final RequestHandler<APIGatewayV2HTTPEvent, String> activityLambda(
-            @Named("TRMNL_WEBHOOK_URL") final String trmnlWebhookUrl,
+            @Named("TRMNL_WEBHOOK_ID") final String webhookId,
             final ObjectMapper objectMapper,
             final KeeeyClient keeeyClient) {
         return new LambdaActual(
-                trmnlWebhookUrl,
+                webhookId,
                 new GetActivityHandler(
                         keeeyClient,
                         objectMapper
@@ -35,11 +35,11 @@ public class DaggerModule {
     @Provides
     @Named("ListsHandler")
     final RequestHandler<APIGatewayV2HTTPEvent, String> calendarLambda(
-            @Named("TRMNL_WEBHOOK_URL") final String trmnlWebhookUrl,
+            @Named("TRMNL_WEBHOOK_ID") final String webhookId,
             final ObjectMapper objectMapper,
             final KeeeyClient keeeyClient) {
         return new LambdaActual(
-                trmnlWebhookUrl,
+                webhookId,
                 new GetListsHandler(
                         keeeyClient,
                         objectMapper
@@ -78,8 +78,8 @@ public class DaggerModule {
     }
 
     @Provides
-    @Named("TRMNL_WEBHOOK_URL")
-    final String trmnlWebhookUrl() {
-        return System.getenv("TRMNL_WEBHOOK_URL");
+    @Named("TRMNL_WEBHOOK_ID")
+    final String trmnlWebhookId() {
+        return System.getenv("TRMNL_WEBHOOK_ID");
     }
 }

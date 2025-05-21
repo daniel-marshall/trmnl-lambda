@@ -18,7 +18,7 @@ import com.fasterxml.jackson.databind.util.StdConverter;
 import com.google.common.collect.ImmutableList;
 import com.marshallArts.trmnl.integ.CalendarEventReader;
 import com.marshallArts.trmnl.integ.KeeeyClient;
-import com.marshallArts.trmnl.integ.WebhookClient;
+import com.marshallArts.trmnl.integ.TrmnlWebhookClient;
 import lombok.AllArgsConstructor;
 import lombok.SneakyThrows;
 
@@ -27,7 +27,7 @@ import static java.util.function.Predicate.not;
 
 @AllArgsConstructor
 public final class LambdaActual implements RequestHandler<APIGatewayV2HTTPEvent, String> {
-    private final String webhookUrl;
+    private final String webhookId;
     private final HandlerDelegate getDelegate;
 
     public interface HandlerDelegate {
@@ -51,7 +51,7 @@ public final class LambdaActual implements RequestHandler<APIGatewayV2HTTPEvent,
 
     @SneakyThrows
     public String invokeWebhookUrl(final String response) {
-        WebhookClient.invoke(webhookUrl, response);
+        new TrmnlWebhookClient(webhookId).invoke(response);
         return response;
     }
 
